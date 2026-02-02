@@ -1,0 +1,84 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+
+model Order {
+  id String @id @default(uuid()) @db.Uuid
+
+  status        OrderStatus     @map("order_status")
+  total         Decimal         @map("order_total") @db.Decimal(10, 2)
+  deliveryId    String?         @map("delivery_id") @db.Uuid
+  userId        String?         @map("user_id") @db.Uuid
+  shopId        String          @map("shop_id") @db.Uuid
+  paymentId     String?         @map("payment_id") // FK but no table shown
+  paymentMethod PaymentMethod?  @map("payment_method")
+  paymentStatus PaymentStatus?  @map("payment_status")
+  transactionId String?         @map("transaction_id") @db.VarChar(255)
+  deliveryAddress String?       @map("delivery_address") @db.VarChar(255)
+
+  items OrderItem[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt      @map("updated_at")
+
+  @@map("orders")
+}
+
+model OrderItem {
+  id String @id @default(uuid()) @db.Uuid
+
+  orderId String @map("order_id") @db.Uuid
+  order   Order  @relation(fields: [orderId], references: [id])
+
+  itemId     String  @map("item_id") @db.Uuid // Product ID
+  quantity   Int
+  unitPrice  Decimal @map("unit_price") @db.Decimal(10, 2)
+  discountId String? @map("discount_id") @db.Uuid
+
+  selectedOptions SelectedOption[]
+
+  @@map("order_items")
+}
+
+model SelectedOption {
+  id String @id @default(uuid()) @db.Uuid
+
+  orderItemId String    @map("item_id") @db.Uuid
+  orderItem   OrderItem @relation(fields: [orderItemId], references: [id])
+
+  name            String  @db.VarChar(100)
+  additionalPrice Decimal @map("additional_price") @db.Decimal(10, 2)
+
+  @@map("selected_options")
+}
+
+enum OrderStatus {
+  draft
+  confirmed
+  preparation
+  ready
+  canceled // Following diagram spelling
+}
+
+enum PaymentStatus {
+  pending
+  completed
+  failed
+}
+
+enum PaymentMethod {
+  card
+  paypal
+  apple_pay @map("apple pay")
+  google_pay @map("google pay")
+}
+

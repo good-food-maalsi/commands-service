@@ -1,0 +1,28 @@
+# Dependencies
+node_modules
+.bun
+
+# Environment variables
+.env
+.env*.local
+
+# Build outputs
+dist
+build
+coverage
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# System Files
+.DS_Store
+.vscode
+.idea
+
+# Bruno (Keep collections but ignore specific environment files if sensitive)
+# Assuming Bruno collections are committed, but personal envs might not be
+# Commands-Service/environments/*.secret.bru
