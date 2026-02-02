@@ -13,7 +13,7 @@ const app = new Elysia()
             documentation: {
                 info: {
                     title: 'Commands Service API',
-                    description: 'API for managing orders in the Good Food ecosystem.',
+                    description: 'Microservice dedicated to order lifecycle management within the Good Food ecosystem. It handles order creation, payment processing (Stripe/Mock), real-time status updates via RabbitMQ, and inventory verification.',
                     version: '1.0.0',
                 },
             },
@@ -24,5 +24,8 @@ const app = new Elysia()
 app.listen({ port: env.PORT });
 
 console.log(
-    `🦊 Elysia is running`,
+    `🦊 Commands Service is running at http://localhost:${env.PORT}`,
+);
+console.log(
+    `📘 Swagger documentation: http://localhost:${env.PORT}/swagger`,
 );
