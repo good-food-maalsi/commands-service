@@ -13,8 +13,9 @@ class RabbitMQ {
             // env.RABBITMQ_HOST usually includes port, e.g. localhost:5672
             // amqp protocol needs full url
             const url = `amqp://${env.RABBITMQ_USER}:${env.RABBITMQ_PASSWORD}@${env.RABBITMQ_HOST}`;
-            this.connection = await amqp.connect(url);
-            this.channel = await this.connection.createChannel();
+            const conn = await amqp.connect(url);
+            this.connection = conn as any;
+            this.channel = await conn.createChannel();
 
             await this.channel.assertExchange(this.exchange, 'topic', { durable: true });
             console.log('Connected to RabbitMQ');

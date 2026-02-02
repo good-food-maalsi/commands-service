@@ -18,7 +18,7 @@ export const authPlugin = new Elysia({ name: 'auth' })
             }
         }
 
-        const profile = await jwt.verify(token)
+        const profile = await jwt.verify(token as any)
 
         if (!profile) {
             return {

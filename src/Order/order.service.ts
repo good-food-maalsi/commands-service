@@ -32,7 +32,7 @@ export class OrderService {
                 total,
                 status: "draft",
                 shopId: data.shopId,
-                userId: userId,
+                userId: userId || null, // Inject userId
                 paymentMethod: "card", // Default or passed in DTO
                 paymentStatus: "pending",
                 items: {
@@ -44,7 +44,7 @@ export class OrderService {
                             create: item.selectedOptions?.map(opt => ({
                                 name: opt.name,
                                 additionalPrice: opt.additionalPrice
-                            }))
+                            })) || []
                         }
                     })),
                 },

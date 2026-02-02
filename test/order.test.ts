@@ -1,8 +1,8 @@
 import { describe, expect, it, mock, spyOn } from "bun:test";
-import { OrderService } from "../src/Order/order.service";
-import { PaymentService } from "../src/Payment/payment.service";
-import { rabbitMQ } from "../src/Utils/rabbitmq";
-import { catalogClient } from "../src/Utils/catalog.client";
+import { OrderService } from "../src/Order/order.service.js";
+import { PaymentService } from "../src/Payment/payment.service.js";
+import { rabbitMQ } from "../src/Utils/rabbitmq.js";
+import { catalogClient } from "../src/Utils/catalog.client.js";
 
 // Mock deps
 const mockDb = {

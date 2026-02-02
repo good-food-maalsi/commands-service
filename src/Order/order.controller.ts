@@ -20,7 +20,8 @@ export const OrderController = new Elysia({ prefix: "/orders" })
     })
     .post(
         "/",
-        async ({ db, getOrderService, body, user }) => {
+        async (context: any) => {
+            const { db, getOrderService, body, user } = context;
             return getOrderService(db).create(body, user.id);
         },
         {
