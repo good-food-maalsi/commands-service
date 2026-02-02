@@ -28,7 +28,7 @@ jobs:
       run: bun run typecheck
 
     - name: Build
-      run: bun build ./src/app.ts --outdir ./dist
+      run: bun build ./src/app.ts --outdir ./dist --target bun
 
     - name: Run Tests
       run: bun test
