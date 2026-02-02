@@ -16,7 +16,10 @@ This service is built with a modern and efficient stack:
 
 ### Prerequisites
 
-- [Bun](https://bun.sh/docs/installation)
+- [Bun](https://bun.sh/docs/installation):
+  ```bash
+  curl -fsSL https://bun.sh/install | bash
+  ```
 - [Docker](https://www.docker.com/) (for database)
 
 ### Installation
