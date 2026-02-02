@@ -2,9 +2,11 @@ import { Elysia, t } from "elysia";
 import { OrderService } from "./order.service.js";
 import { CreateOrderDTO, UpdateOrderStatusDTO } from "./dto/order.dto.js";
 import { prismaPlugin } from "../Plugin/prisma.js";
+import { authPlugin } from "../Plugin/auth.js";
 
 export const OrderController = new Elysia({ prefix: "/orders" })
     .use(prismaPlugin)
+    .use(authPlugin)
     .decorate({
         getOrderService: (db: any) => new OrderService(db),
     })
@@ -18,11 +20,12 @@ export const OrderController = new Elysia({ prefix: "/orders" })
     })
     .post(
         "/",
-        async ({ db, getOrderService, body }) => {
-            return getOrderService(db).create(body);
+        async ({ db, getOrderService, body, user }) => {
+            return getOrderService(db).create(body, user.id);
         },
         {
             body: CreateOrderDTO,
+            isSignIn: true, // Macro to ensure user is authenticated
         }
     )
     .patch(

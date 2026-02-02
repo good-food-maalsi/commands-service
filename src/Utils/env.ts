@@ -24,6 +24,14 @@ const envSchema = z.object({
   // Additional Elysia-specific variables
   ELYSIA_VERSION: z.string().default('0.0.0'),
   RUNTIME: z.enum(['bun', 'edge']).default('bun'),
+
+  // Security
+  JWT_SECRET: z.string().default('super-secret-key-change-in-prod'),
+
+  // RabbitMQ
+  RABBITMQ_USER: z.string().default('guest'),
+  RABBITMQ_PASSWORD: z.string().default('guest'),
+  RABBITMQ_HOST: z.string().default('localhost:5672'),
 });
 
 export const env = envSchema.parse(process.env);

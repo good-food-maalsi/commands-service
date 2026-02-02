@@ -16,11 +16,16 @@ export const OrderDTO = t.Object({
 });
 
 export const CreateOrderDTO = t.Object({
+    shopId: t.String(),
     items: t.Array(
         t.Object({
-            productId: t.String(),
+            itemId: t.String(),
             quantity: t.Integer({ min: 1 }),
-            price: t.Number({ min: 0 }),
+            unitPrice: t.Number({ min: 0 }),
+            selectedOptions: t.Optional(t.Array(t.Object({
+                name: t.String(),
+                additionalPrice: t.Number()
+            })))
         })
     ),
 });
