@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, OrderStatus } from "@prisma/client";
 import { CreateOrderDTO } from "./dto/order.dto.js";
 
 import { PaymentService } from "../Payment/payment.service.js";
@@ -30,7 +30,7 @@ export class OrderService {
         const order = await this.db.order.create({
             data: {
                 total,
-                status: "draft",
+                status: OrderStatus.draft,
                 shopId: data.shopId,
                 userId: userId || null, // Inject userId
                 paymentMethod: "card", // Default or passed in DTO
@@ -68,7 +68,7 @@ export class OrderService {
             data: {
                 paymentStatus: paymentResult.status,
                 transactionId: paymentResult.transactionId,
-                status: paymentResult.status === "completed" ? "confirmed" : "draft"
+                status: paymentResult.status === "completed" ? OrderStatus.confirmed : OrderStatus.draft
             },
             include: {
                 items: {
@@ -80,7 +80,7 @@ export class OrderService {
         });
 
         // 4. Publish Event if Confirmed
-        if (updatedOrder.status === "confirmed") {
+        if (updatedOrder.status === OrderStatus.confirmed) {
             await rabbitMQ.publish('order.created', {
                 orderId: updatedOrder.id,
                 shopId: updatedOrder.shopId,
@@ -111,9 +111,22 @@ export class OrderService {
     }
 
     async updateStatus(id: string, status: any) { // Type to be refined with Prisma Enum
-        return this.db.order.update({
+        const updatedOrder = await this.db.order.update({
             where: { id },
             data: { status },
+            include: { items: true }
         });
+
+        if (status === OrderStatus.ready) {
+            await rabbitMQ.publish('order.ready', {
+                orderId: updatedOrder.id,
+                shopId: updatedOrder.shopId,
+                userId: updatedOrder.userId,
+                items: updatedOrder.items,
+                total: updatedOrder.total
+            })
+        }
+
+        return updatedOrder;
     }
 }
