@@ -38,6 +38,30 @@ class RabbitMQ {
             console.log(`Published message to ${routingKey}`);
         }
     }
+    async subscribe(routingKey: string, handler: (msg: any) => Promise<void>) {
+        if (!this.channel) {
+            await this.connect();
+        }
+
+        if (this.channel) {
+            const q = await this.channel.assertQueue('', { exclusive: true });
+
+            await this.channel.bindQueue(q.queue, this.exchange, routingKey);
+
+            this.channel.consume(
+                q.queue,
+                async (msg) => {
+                    if (msg) {
+                        const content = JSON.parse(msg.content.toString());
+                        await handler(content);
+                        this.channel?.ack(msg);
+                    }
+                },
+                { noAck: false }
+            );
+            console.log(`Subscribed to ${routingKey}`);
+        }
+    }
 }
 
 export const rabbitMQ = new RabbitMQ();

@@ -3,6 +3,8 @@ import { Elysia } from 'elysia';
 
 import { AppRoutes } from './app.routes.js';
 import { env } from './Utils/env.js';
+import { rabbitMQ } from './Utils/rabbitmq.js';
+import { startOrderConsumers } from './Order/order.consumer.js';
 
 const app = new Elysia()
     .use(
@@ -19,9 +21,20 @@ const app = new Elysia()
             },
         }),
     )
-    .use(AppRoutes);
+    .use(AppRoutes)
+    .onError(({ code, error }) => {
+        console.error('Global Error Handler:', code, error);
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        return new Response(JSON.stringify({ error: errorMessage }), { status: 500 })
+    });
 
-app.listen({ port: env.PORT });
+app.listen({ port: env.PORT }, async () => {
+    console.log(`🦊 Commands Service is running at http://localhost:${env.PORT}`);
+    console.log(`📘 Swagger documentation: http://localhost:${env.PORT}/swagger`);
+
+    await rabbitMQ.connect();
+    await startOrderConsumers();
+});
 
 console.log(
     `🦊 Commands Service is running at http://localhost:${env.PORT}`,
