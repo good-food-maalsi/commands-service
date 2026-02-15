@@ -81,13 +81,17 @@ export class OrderService {
 
         // 4. Publish Event if Confirmed
         if (updatedOrder.status === OrderStatus.confirmed) {
-            await rabbitMQ.publish('order.created', {
-                orderId: updatedOrder.id,
-                shopId: updatedOrder.shopId,
-                userId: updatedOrder.userId,
-                items: updatedOrder.items,
-                total: updatedOrder.total
-            });
+            try {
+                await rabbitMQ.publish('order.created', {
+                    orderId: updatedOrder.id,
+                    shopId: updatedOrder.shopId,
+                    userId: updatedOrder.userId,
+                    items: updatedOrder.items,
+                    total: updatedOrder.total
+                });
+            } catch (error) {
+                console.error('OrderService: Failed to publish event', error);
+            }
         }
 
         return updatedOrder;

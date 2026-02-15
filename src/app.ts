@@ -21,7 +21,11 @@ const app = new Elysia()
             },
         }),
     )
-    .use(AppRoutes);
+    .use(AppRoutes)
+    .onError(({ code, error }) => {
+        console.error('Global Error Handler:', code, error)
+        return new Response(JSON.stringify({ error: error.message }), { status: 500 })
+    });
 
 app.listen({ port: env.PORT }, async () => {
     console.log(`🦊 Commands Service is running at http://localhost:${env.PORT}`);
