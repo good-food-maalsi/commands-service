@@ -24,6 +24,9 @@ jobs:
               with:
                   bun-version: latest
 
+            - name: Install contracts dependencies
+              run: cd good-food-contracts && bun install
+
             - name: Install Dependencies
               run: bun install --frozen-lockfile
 
