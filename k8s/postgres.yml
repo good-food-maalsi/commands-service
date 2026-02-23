@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+    name: commands-postgres
+    labels:
+        app: commands-postgres
+spec:
+    serviceName: commands-postgres
+    replicas: 1
+    selector:
+        matchLabels:
+            app: commands-postgres
+    template:
+        metadata:
+            labels:
+                app: commands-postgres
+        spec:
+            containers:
+                - name: postgres
+                  image: postgres:15-alpine
+                  ports:
+                      - containerPort: 5432
+                  env:
+                      - name: POSTGRES_USER
+                        valueFrom:
+                            secretKeyRef:
+                                name: commands-service-db-secret
+                                key: POSTGRES_USER
+                      - name: POSTGRES_PASSWORD
+                        valueFrom:
+                            secretKeyRef:
+                                name: commands-service-db-secret
+                                key: POSTGRES_PASSWORD
+                      - name: POSTGRES_DB
+                        valueFrom:
+                            secretKeyRef:
+                                name: commands-service-db-secret
+                                key: POSTGRES_DB
+                  volumeMounts:
+                      - name: postgres-data
+                        mountPath: /var/lib/postgresql/data
+                  resources:
+                      requests:
+                          memory: "128Mi"
+                          cpu: "100m"
+                      limits:
+                          memory: "512Mi"
+                          cpu: "500m"
+    volumeClaimTemplates:
+        - metadata:
+              name: postgres-data
+          spec:
+              accessModes: ["ReadWriteOnce"]
+              resources:
+                  requests:
+                      storage: 10Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+    name: commands-postgres
+spec:
+    selector:
+        app: commands-postgres
+    ports:
+        - protocol: TCP
+          port: 5432
+          targetPort: 5432

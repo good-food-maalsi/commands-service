@@ -4,7 +4,9 @@ node_modules
 
 # Environment variables
 .env
-.env*.local
+.env.*
+!.env.example
+!.env.test.example
 
 # Build outputs
 dist
@@ -26,3 +28,6 @@ yarn-error.log*
 # Bruno (Keep collections but ignore specific environment files if sensitive)
 # Assuming Bruno collections are committed, but personal envs might not be
 # Commands-Service/environments/*.secret.bru
+
+# Kubernetes secrets (applied manually, not via ArgoCD)
+k8s-secrets/

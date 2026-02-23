@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+    name: commands-service-config
+data:
+    NODE_ENV: "production"
+    PORT: "8080"
+    PGHOST: "commands-postgres"
+    PGPORT: "5432"
+    PGDATABASE: "commands_db"

@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: commands-service
+    labels:
+        app: commands-service
+spec:
+    replicas: 1
+    revisionHistoryLimit: 3
+    selector:
+        matchLabels:
+            app: commands-service
+    template:
+        metadata:
+            labels:
+                app: commands-service
+        spec:
+            imagePullSecrets:
+                - name: scw-registry-secret
+            containers:
+                - name: commands-service
+                  image: rg.fr-par.scw.cloud/good-food-container-registry/commands-service:latest
+                  ports:
+                      - containerPort: 8080
+                  envFrom:
+                      - configMapRef:
+                            name: commands-service-config
+                      - secretRef:
+                            name: commands-service-db-secret
+                  resources:
+                      requests:
+                          memory: "128Mi"
+                          cpu: "100m"
+                      limits:
+                          memory: "512Mi"
+                          cpu: "500m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+    name: commands-service
+spec:
+    selector:
+        app: commands-service
+    ports:
+        - protocol: TCP
+          port: 8080
+          targetPort: 8080
