@@ -36,6 +36,8 @@ spec:
                             secretKeyRef:
                                 name: commands-service-db-secret
                                 key: POSTGRES_DB
+                      - name: PGDATA
+                        value: /var/lib/postgresql/data/pgdata
                   volumeMounts:
                       - name: postgres-data
                         mountPath: /var/lib/postgresql/data
