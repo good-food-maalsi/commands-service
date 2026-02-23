@@ -1,10 +1,16 @@
 # === Production Dockerfile ===
 FROM oven/bun:1-alpine
 COPY good-food-contracts /good-food-contracts
+WORKDIR /good-food-contracts
+RUN bun install
+
 WORKDIR /app
 COPY package.json bun.lockb* bun.lock* ./
+RUN bun install ../good-food-contracts
 RUN bun install --production
 COPY . .
+# Provide dummy DATABASE_URL for prisma generate during docker build
+ENV DATABASE_URL="postgresql://dummy:dummy@localhost:5432/dummy"
 RUN bunx prisma generate
 EXPOSE 8080
 CMD ["bun", "run", "src/app.ts"]
