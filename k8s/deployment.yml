@@ -6,7 +6,6 @@ metadata:
         app: commands-service
 spec:
     replicas: 1
-    revisionHistoryLimit: 3
     selector:
         matchLabels:
             app: commands-service
@@ -20,20 +19,25 @@ spec:
             containers:
                 - name: commands-service
                   image: rg.fr-par.scw.cloud/good-food-container-registry/commands-service:latest
+                  imagePullPolicy: Always
                   ports:
                       - containerPort: 8080
+                  resources:
+                      requests:
+                          memory: "32Mi"
+                          cpu: "10m"
+                      limits:
+                          memory: "64Mi"
+                          cpu: "100m"
                   envFrom:
                       - configMapRef:
                             name: commands-service-config
                       - secretRef:
                             name: commands-service-db-secret
-                  resources:
-                      requests:
-                          memory: "128Mi"
-                          cpu: "100m"
-                      limits:
-                          memory: "512Mi"
-                          cpu: "500m"
+                      - secretRef:
+                            name: good-food-jwt-secret
+                      - secretRef:
+                            name: rabbitmq-secret
 ---
 apiVersion: v1
 kind: Service

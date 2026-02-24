@@ -8,3 +8,4 @@ data:
     PGHOST: "commands-postgres"
     PGPORT: "5432"
     PGDATABASE: "commands_db"
+    RABBITMQ_HOST: "rabbitmq:5672"
