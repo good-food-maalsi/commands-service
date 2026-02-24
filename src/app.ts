@@ -6,7 +6,7 @@ import { env } from "./Utils/env.js";
 import { rabbitMQ } from "./Utils/rabbitmq.js";
 import { startOrderConsumers } from "./Order/order.consumer.js";
 
-const app = new Elysia({ prefix: "/commands" })
+export const app = new Elysia({ prefix: "/commands" })
     .use(
         swagger({
             path: "/swagger",
