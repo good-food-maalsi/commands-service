@@ -6,7 +6,7 @@ import { env } from './Utils/env.js';
 import { rabbitMQ } from './Utils/rabbitmq.js';
 import { startOrderConsumers } from './Order/order.consumer.js';
 
-const app = new Elysia()
+const app = new Elysia({ prefix: '/commands' })
     .use(
         swagger({
             path: '/swagger',
@@ -30,7 +30,7 @@ const app = new Elysia()
 
 app.listen({ port: env.PORT }, async () => {
     console.log(`🦊 Commands Service is running at http://localhost:${env.PORT}`);
-    console.log(`📘 Swagger documentation: http://localhost:${env.PORT}/swagger`);
+    console.log(`📘 Swagger documentation: http://localhost:${env.PORT}/commands/swagger`);
 
     await rabbitMQ.connect();
     await startOrderConsumers();
@@ -40,5 +40,5 @@ console.log(
     `🦊 Commands Service is running at http://localhost:${env.PORT}`,
 );
 console.log(
-    `📘 Swagger documentation: http://localhost:${env.PORT}/swagger`,
+    `📘 Swagger documentation: http://localhost:${env.PORT}/commands/swagger`,
 );
