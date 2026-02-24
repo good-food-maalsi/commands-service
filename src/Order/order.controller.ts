@@ -13,14 +13,6 @@ export const OrderController = new Elysia({ prefix: "/orders" })
     .use(prismaPlugin)
     .use(authPlugin)
     // Protected: ADMIN/STAFF see all orders; CUSTOMER (and others) see only their orders
-    .use((app) =>
-        app
-            .derive(({ user }) => ({ user }))
-            .resolve(({ user }) => {
-                // Basic check, more checks inside endpoints
-                return { user };
-            }),
-    )
     .decorate({
         getOrderService: (db: any) => new OrderService(db),
     })
