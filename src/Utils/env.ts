@@ -27,6 +27,7 @@ const envSchema = z.object({
 
   // Security
   JWT_SECRET: z.string().default('super-secret-key-change-in-prod'),
+  JWT_PUBLIC_KEY_BASE64: z.string(),
 
   // RabbitMQ
   RABBITMQ_USER: z.string().default('guest'),

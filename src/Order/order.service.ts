@@ -105,6 +105,15 @@ export class OrderService {
         });
     }
 
+    async getByUserId(userId: string) {
+        return this.db.order.findMany({
+            where: { userId },
+            include: {
+                items: true,
+            },
+        });
+    }
+
     async getById(id: string) {
         return this.db.order.findUnique({
             where: { id },
