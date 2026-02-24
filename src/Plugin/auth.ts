@@ -10,25 +10,47 @@ import { env } from "../Utils/env.js";
 
 export { Role } from "@good-food/utils";
 
+console.log("[AUTH] Plugin chargé (derive s'exécutera sur chaque requête)");
+
 export const authPlugin = new Elysia({ name: "auth" })
   .derive(
     async ({
       headers,
+      request,
     }): Promise<{ user: AuthUser | null; userPayload: UserPayload | null }> => {
+      console.log("\n[AUTH] ========== New Request ==========");
+      console.log("[AUTH] Method:", request.method);
+      console.log("[AUTH] URL:", request.url);
+
       // Try to get token from Authorization header
       const authHeader = headers.authorization || headers["authorization"];
       const token = authHeader?.startsWith("Bearer ")
         ? authHeader.slice(7)
         : undefined;
+      console.log("🚀 ~ token:", token);
 
       console.log(
-        "[AUTH] Header:",
-        authHeader ? `${authHeader.slice(0, 20)}...` : "none",
+        "[AUTH] Authorization Header:",
+        authHeader ? `${authHeader.slice(0, 30)}...` : "❌ NOT FOUND",
       );
-      console.log("[AUTH] Token:", token ? `${token.slice(0, 20)}...` : "none");
+      console.log(
+        "[AUTH] Extracted Token:",
+        token ? `${token.slice(0, 30)}...` : "❌ NOT FOUND",
+      );
+
+      // Also check for cookie (shouldn't be used but good to debug)
+      const cookieHeader = headers.cookie || headers["Cookie"];
+      if (cookieHeader) {
+        console.log(
+          "[AUTH] Cookie header present:",
+          cookieHeader.substring(0, 50) + "...",
+        );
+      } else {
+        console.log("[AUTH] Cookie header: ❌ NOT FOUND");
+      }
 
       if (!token) {
-        console.log("[AUTH] No token found");
+        console.log("[AUTH] ❌ No token found - returning null user");
         return { user: null, userPayload: null };
       }
 
@@ -37,19 +59,35 @@ export const authPlugin = new Elysia({ name: "auth" })
         publicKeyBase64: env.JWT_PUBLIC_KEY_BASE64,
       });
 
-      console.log("[AUTH] Payload:", payload ? `user: ${payload.sub}` : "null");
+      console.log(
+        "[AUTH] Token verification result:",
+        payload ? "✅ VALID" : "❌ INVALID",
+      );
+      if (payload) {
+        console.log(
+          "[AUTH] Token payload - sub:",
+          payload.sub,
+          "email:",
+          payload.email,
+        );
+      }
 
       if (!payload) {
-        console.log("[AUTH] Token verification failed");
+        console.log(
+          "[AUTH] ❌ Token verification failed - returning null user",
+        );
         return { user: null, userPayload: null };
       }
 
       // Convert to AuthUser for convenience
       const user = toAuthUser(payload);
       console.log(
-        "[AUTH] User:",
-        user ? `id: ${user.id}, roles: ${user.roles}` : "null",
+        "[AUTH] ✅ Authenticated user:",
+        user
+          ? `id: ${user.id}, email: ${payload.email}, roles: ${user.roles.join(", ")}`
+          : "null",
       );
+      console.log("[AUTH] ====================================\n");
 
       return {
         user,

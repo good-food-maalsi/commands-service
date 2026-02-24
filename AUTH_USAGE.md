@@ -1,6 +1,6 @@
 # Authentication Usage Guide
 
-This service now uses `@good-food/utils` v1.1.0 for JWT authentication and role-based access control.
+This service uses un middleware d’auth local (sur le modèle du catalog-service) : `src/Middleware/auth.middleware.ts` — JWT vérifié avec la clé publique (jose + `JWT_PUBLIC_KEY_BASE64`), avec option `allowedRoles` par controller.
 
 ---
 
@@ -63,7 +63,7 @@ Toutes les routes sont préfixées par **`/api/v1`**.
 ## Available Roles
 
 ```typescript
-import { Role } from './src/Plugin/auth'
+import { Role } from './src/Middleware/auth.middleware'
 
 Role.ADMIN
 Role.FRANCHISE_OWNER
@@ -76,7 +76,7 @@ Role.CUSTOMER
 ### Basic Authentication (Any authenticated user)
 
 ```typescript
-import { authPlugin } from './Plugin/auth'
+import { authMiddleware } from './Middleware/auth.middleware'
 
 .post('/orders', async ({ db, body, user }) => {
     // user.id is available here
@@ -91,7 +91,7 @@ import { authPlugin } from './Plugin/auth'
 #### Single Role
 
 ```typescript
-import { authPlugin, Role } from './Plugin/auth'
+import { createAuthMiddleware, Role } from './Middleware/auth.middleware'
 
 .delete('/orders/:id', async ({ params }) => {
     return deleteOrder(params.id)

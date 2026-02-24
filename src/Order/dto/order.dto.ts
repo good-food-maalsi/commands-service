@@ -33,3 +33,27 @@ export const CreateOrderDTO = t.Object({
 export const UpdateOrderStatusDTO = t.Object({
     status: t.String(),
 });
+
+export const UpdateOrderItemsDTO = t.Object({
+    items: t.Array(
+        t.Object({
+            itemId: t.String(),
+            quantity: t.Integer({ min: 1 }),
+            unitPrice: t.Number({ min: 0 }),
+            selectedOptions: t.Optional(t.Array(t.Object({
+                name: t.String(),
+                additionalPrice: t.Number()
+            })))
+        })
+    ),
+});
+
+export const AddOrderItemDTO = t.Object({
+    itemId: t.String(),
+    quantity: t.Integer({ min: 1 }),
+    unitPrice: t.Number({ min: 0 }),
+    selectedOptions: t.Optional(t.Array(t.Object({
+        name: t.String(),
+        additionalPrice: t.Number()
+    })))
+});
