@@ -1,0 +1,27 @@
+services:
+  jenkins:
+    image: jenkins/jenkins:lts-jdk21
+    container_name: jenkins
+    restart: unless-stopped
+    privileged: true
+    user: root
+
+    ports:
+      - "8080:8080"    # Interface Web Jenkins
+      - "50000:50000"  # Port pour les agents Jenkins (JNLP)
+
+    volumes:
+      # Persistance des données Jenkins (jobs, configs, plugins…)
+      - jenkins_home:/var/jenkins_home
+
+      # Accès au daemon Docker de la machine hôte
+      # → permet à Jenkins de lancer des `docker build` / `docker push`
+      - /var/run/docker.sock:/var/run/docker.sock
+
+    environment:
+      # Skip the initial setup wizard (optionnel, à retirer en prod)
+      - JAVA_OPTS=-Djenkins.install.runSetupWizard=false
+
+volumes:
+  jenkins_home:
+    driver: local
