@@ -23,8 +23,14 @@ export const app = new Elysia({ prefix: "/commands" })
         }),
     )
     .use(AppRoutes)
-    .onError(({ code, error }) => {
-        console.error("Global Error Handler:", code, error);
+    .onError(({ code, error, request }) => {
+        console.error(
+            "Global Error Handler:",
+            code,
+            error,
+            "URL:",
+            request.url,
+        );
         const errorMessage =
             error instanceof Error ? error.message : String(error);
         return new Response(JSON.stringify({ error: errorMessage }), {
