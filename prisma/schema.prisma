@@ -19,7 +19,7 @@ model Order {
   deliveryId    String?         @map("delivery_id") @db.Uuid
   userId        String?         @map("user_id") @db.Uuid
   shopId        String          @map("shop_id") @db.Uuid
-  paymentId     String?         @map("payment_id") // FK but no table shown
+  paymentId     String?         @map("payment_id") @db.Uuid
   paymentMethod PaymentMethod?  @map("payment_method")
   paymentStatus PaymentStatus?  @map("payment_status")
   transactionId String?         @map("transaction_id") @db.VarChar(255)

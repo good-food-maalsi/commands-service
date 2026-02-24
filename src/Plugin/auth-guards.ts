@@ -1,65 +1,30 @@
-import { Elysia } from 'elysia'
-import { authPlugin, Role } from './auth.js'
-import type { AuthUser } from '@good-food/utils'
+import { Elysia } from "elysia";
+import {
+  authMiddleware,
+  createAuthMiddleware,
+  Role,
+} from "../Middleware/auth.middleware.js";
 
-// Re-export Role for convenience
-export { Role } from './auth.js'
+export { Role } from "../Middleware/auth.middleware.js";
 
 /**
- * Creates an Elysia group that requires authentication
+ * Groupe Elysia qui exige une authentification (token valide).
  * Usage: .use(requireAuth)
  */
-export const requireAuth = new Elysia({ name: 'require-auth' })
-    .use(authPlugin)
-    .onBeforeHandle((context: any) => {
-        if (!context.user) {
-            return context.error(401, { message: 'Unauthorized - Authentication required' })
-        }
-    })
+export const requireAuth = new Elysia({ name: "require-auth" }).use(authMiddleware);
 
 /**
- * Creates an Elysia group that requires specific roles
+ * Groupe Elysia qui exige des rôles précis.
  * Usage: .use(requireRoles([Role.ADMIN, Role.STAFF]))
  */
 export function requireRoles(roles: Role | Role[]) {
-    const requiredRoles = Array.isArray(roles) ? roles : [roles]
-
-    return new Elysia({ name: 'require-roles' })
-        .use(authPlugin)
-        .onBeforeHandle((context: any) => {
-            if (!context.user) {
-                return context.error(401, { message: 'Unauthorized - Authentication required' })
-            }
-
-            const userRoles = context.user.roles || []
-            const hasPermission = userRoles.some((role: Role) => requiredRoles.includes(role))
-
-            if (!hasPermission) {
-                return context.error(403, {
-                    message: 'Forbidden - Insufficient permissions',
-                    required: requiredRoles,
-                    actual: userRoles
-                })
-            }
-        })
+  const requiredRoles = Array.isArray(roles) ? roles : [roles];
+  return new Elysia({ name: "require-roles" }).use(
+    createAuthMiddleware({ allowedRoles: requiredRoles }),
+  );
 }
 
-/**
- * Admin-only guard
- */
-export const requireAdmin = requireRoles(Role.ADMIN)
-
-/**
- * Staff or Admin guard
- */
-export const requireStaff = requireRoles([Role.STAFF, Role.ADMIN])
-
-/**
- * Franchise owner or Admin guard
- */
-export const requireFranchiseOwner = requireRoles([Role.FRANCHISE_OWNER, Role.ADMIN])
-
-/**
- * Customer-only guard
- */
-export const requireCustomer = requireRoles(Role.CUSTOMER)
+export const requireAdmin = requireRoles(Role.ADMIN);
+export const requireStaff = requireRoles([Role.STAFF, Role.ADMIN]);
+export const requireFranchiseOwner = requireRoles([Role.FRANCHISE_OWNER, Role.ADMIN]);
+export const requireCustomer = requireRoles(Role.CUSTOMER);
