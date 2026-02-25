@@ -1,42 +1,44 @@
 name: CI
 
 on:
-  push:
-    branches: [main, master, develop]
-  pull_request:
-    branches: [main, master, develop]
+    push:
+        branches: [main, master, develop]
+    pull_request:
+        branches: [main, master, develop]
 
 jobs:
-  build-and-test:
-    runs-on: ubuntu-latest
+    build-and-test:
+        runs-on: ubuntu-latest
 
-    steps:
-      - uses: actions/checkout@v4
+        steps:
+            - uses: actions/checkout@v4
 
-      - name: Checkout good-food-contracts
-        uses: actions/checkout@v4
-        with:
-          repository: good-food-maalsi/good-food-contracts
-          path: good-food-contracts
+            - name: Checkout good-food-contracts
+              uses: actions/checkout@v4
+              with:
+                  repository: good-food-maalsi/good-food-contracts
+                  path: good-food-contracts
 
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: latest
+            - name: Setup Bun
+              uses: oven-sh/setup-bun@v2
+              with:
+                  bun-version: latest
 
-      - name: Install Dependencies
-        run: bun install ./good-food-contracts && bun install --frozen-lockfile
+            - name: Install Dependencies
+              run: bun install ./good-food-contracts && bun install --frozen-lockfile
 
-      - name: Generate Prisma Client
-        run: bun run db:generate
+            - name: Generate Prisma Client
+              run: bun run db:generate
 
-      - name: Type Check
-        run: bun run typecheck
+            - name: Type Check
+              run: bun run typecheck
 
-      - name: Build
-        run: bun build ./src/app.ts --outdir ./dist --target bun
+            - name: Build
+              run: bun build ./src/app.ts --outdir ./dist --target bun
 
-      - name: Run Tests
-        run: bun test
-        env:
-          JWT_PUBLIC_KEY_BASE64: test-secret
+            - name: Run Tests
+              run: bun test
+              env:
+                  JWT_PUBLIC_KEY_BASE64: test-secret
+                  PGPASSWORD: test-password
+                  POSTGRES_PASSWORD: test-password
