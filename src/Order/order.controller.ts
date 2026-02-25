@@ -301,15 +301,21 @@ export const OrderController = new Elysia({ prefix: "/orders" })
             );
             const isOwner = order.userId && order.userId === user.id;
 
+            const mappedStatus =
+                body.status === "validated" ? "confirmed" : body.status;
+
             if (isAdminOrStaff) {
-                return getOrderService(db).updateStatus(params.id, body.status);
+                return getOrderService(db).updateStatus(
+                    params.id,
+                    mappedStatus,
+                );
             }
 
             if (
                 isOwner &&
                 (body.status === "confirmed" || body.status === "validated")
             ) {
-                return getOrderService(db).updateStatus(params.id, body.status);
+                return getOrderService(db).updateStatus(params.id, "confirmed");
             }
 
             context.set.status = 403;
