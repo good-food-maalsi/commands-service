@@ -1,5 +1,7 @@
+import { env } from "./env.js";
+
 export class CatalogClient {
-    private baseUrl = "http://catalog-nginx"; // Service name in Docker
+    private baseUrl = env.CATALOG_SERVICE_URL;
 
     async checkAvailability(
         items: { itemId: string; quantity: number }[],

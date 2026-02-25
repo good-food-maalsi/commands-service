@@ -32,6 +32,9 @@ const envSchema = z.object({
     RABBITMQ_USER: z.string().default("guest"),
     RABBITMQ_PASSWORD: z.string().default("guest"),
     RABBITMQ_HOST: z.string().default("localhost:5672"),
+
+    // Catalog service
+    CATALOG_SERVICE_URL: z.string().default("http://catalog-service:8080/catalog"),
 });
 
 export const env = envSchema.parse(process.env);
