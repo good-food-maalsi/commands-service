@@ -24,6 +24,11 @@ export const app = new Elysia({ prefix: "/commands" })
     )
     .use(AppRoutes)
     .onError(({ code, error, request }) => {
+        if (code === "NOT_FOUND") {
+            return new Response(JSON.stringify({ error: "Not Found" }), {
+                status: 404,
+            });
+        }
         console.error(
             "Global Error Handler:",
             code,
@@ -53,6 +58,6 @@ app.listen({ port: env.PORT }, async () => {
     });
     console.log("");
 
-    await rabbitMQ.connect();
-    await startOrderConsumers();
+    // await rabbitMQ.connect();
+    // await startOrderConsumers();
 });

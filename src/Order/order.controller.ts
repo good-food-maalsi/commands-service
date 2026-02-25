@@ -79,7 +79,7 @@ export const OrderController = new Elysia({ prefix: "/orders" })
     })
     // Protected: Authenticated users can create orders
     .post(
-        "/",
+        "",
         async (context: any) => {
             const { db, getOrderService, body, user } = context;
 
