@@ -6,7 +6,7 @@ import {
     UpdateOrderItemsDTO,
     AddOrderItemDTO,
 } from "./dto/order.dto.js";
-import { authPlugin, Role } from "../Plugin/auth.js";
+import { authPlugin, Role, extractRoles } from "../Plugin/auth.js";
 import { prismaPlugin } from "../Plugin/prisma.js";
 
 export const OrderController = new Elysia({ prefix: "/orders" })
@@ -25,9 +25,12 @@ export const OrderController = new Elysia({ prefix: "/orders" })
             return { message: "Unauthorized - Authentication required" };
         }
 
-        const userRoles = user.roles || [];
+        const userRoles = extractRoles(user);
         const isAdminOrStaff = userRoles.some(
-            (role: any) => role === Role.ADMIN || role === Role.STAFF,
+            (role: any) =>
+                role === Role.ADMIN ||
+                role === Role.STAFF ||
+                role === Role.FRANCHISE_OWNER,
         );
 
         if (isAdminOrStaff) {
@@ -58,9 +61,12 @@ export const OrderController = new Elysia({ prefix: "/orders" })
             return { message: "Order not found" };
         }
 
-        const userRoles = user.roles || [];
+        const userRoles = extractRoles(user);
         const isStaffOrAdmin = userRoles.some(
-            (role: any) => role === Role.ADMIN || role === Role.STAFF,
+            (role: any) =>
+                role === Role.ADMIN ||
+                role === Role.STAFF ||
+                role === Role.FRANCHISE_OWNER,
         );
 
         const isOwner = order.userId && order.userId === user.id;
@@ -144,9 +150,12 @@ export const OrderController = new Elysia({ prefix: "/orders" })
                 return { message: "Can only add items to draft orders" };
             }
 
-            const userRoles = user.roles || [];
+            const userRoles = extractRoles(user);
             const isAdminOrStaff = userRoles.some(
-                (role: any) => role === Role.ADMIN || role === Role.STAFF,
+                (role: any) =>
+                    role === Role.ADMIN ||
+                    role === Role.STAFF ||
+                    role === Role.FRANCHISE_OWNER,
             );
             const isOwner = order.userId && order.userId === user.id;
 
@@ -220,9 +229,12 @@ export const OrderController = new Elysia({ prefix: "/orders" })
                 return { message: "Can only update items of draft orders" };
             }
 
-            const userRoles = user.roles || [];
+            const userRoles = extractRoles(user);
             const isAdminOrStaff = userRoles.some(
-                (role: any) => role === Role.ADMIN || role === Role.STAFF,
+                (role: any) =>
+                    role === Role.ADMIN ||
+                    role === Role.STAFF ||
+                    role === Role.FRANCHISE_OWNER,
             );
             const isOwner = order.userId && order.userId === user.id;
 
@@ -280,9 +292,12 @@ export const OrderController = new Elysia({ prefix: "/orders" })
                 return { message: "Order not found" };
             }
 
-            const userRoles = user.roles || [];
+            const userRoles = extractRoles(user);
             const isAdminOrStaff = userRoles.some(
-                (role: any) => role === Role.ADMIN || role === Role.STAFF,
+                (role: any) =>
+                    role === Role.ADMIN ||
+                    role === Role.STAFF ||
+                    role === Role.FRANCHISE_OWNER,
             );
             const isOwner = order.userId && order.userId === user.id;
 
@@ -297,8 +312,8 @@ export const OrderController = new Elysia({ prefix: "/orders" })
             context.set.status = 403;
             return {
                 message:
-                    "Forbidden - Only ADMIN, STAFF or order owner can update status; owner can only set status to confirmed",
-                required: [Role.ADMIN, Role.STAFF],
+                    "Forbidden - Only ADMIN, STAFF, FRANCHISE_OWNER or order owner can update status; owner can only set status to confirmed",
+                required: [Role.ADMIN, Role.STAFF, Role.FRANCHISE_OWNER],
                 actual: userRoles,
             };
         },

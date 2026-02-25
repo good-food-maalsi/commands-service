@@ -1,7 +1,7 @@
-import { createAuthMiddleware, Role } from "@good-food/utils";
+import { createAuthMiddleware, Role, extractRoles } from "@good-food/utils";
 
 export const authPlugin = createAuthMiddleware({
-    allowedRoles: [Role.CUSTOMER, Role.ADMIN, Role.STAFF],
+    allowedRoles: [Role.CUSTOMER, Role.ADMIN, Role.STAFF, Role.FRANCHISE_OWNER],
 });
 
-export { Role };
+export { Role, extractRoles };
