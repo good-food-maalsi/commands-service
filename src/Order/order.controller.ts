@@ -234,7 +234,7 @@ export const OrderController = new Elysia({ prefix: "/orders" })
                 (role: any) =>
                     role === Role.ADMIN ||
                     role === Role.STAFF ||
-                    role === Role.FRANCHISE_OWNER,
+                    role === Role.CUSTOMER,
             );
             const isOwner = order.userId && order.userId === user.id;
 
