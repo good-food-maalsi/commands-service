@@ -66,7 +66,7 @@ export const OrderController = new Elysia({ prefix: "/orders" })
             (role: any) =>
                 role === Role.ADMIN ||
                 role === Role.STAFF ||
-                role === Role.FRANCHISE_OWNER,
+                role === Role.CUSTOMER,
         );
 
         const isOwner = order.userId && order.userId === user.id;
@@ -155,7 +155,7 @@ export const OrderController = new Elysia({ prefix: "/orders" })
                 (role: any) =>
                     role === Role.ADMIN ||
                     role === Role.STAFF ||
-                    role === Role.FRANCHISE_OWNER,
+                    role === Role.CUSTOMER,
             );
             const isOwner = order.userId && order.userId === user.id;
 
@@ -297,7 +297,7 @@ export const OrderController = new Elysia({ prefix: "/orders" })
                 (role: any) =>
                     role === Role.ADMIN ||
                     role === Role.STAFF ||
-                    role === Role.FRANCHISE_OWNER,
+                    role === Role.CUSTOMER,
             );
             const isOwner = order.userId && order.userId === user.id;
 
@@ -315,8 +315,8 @@ export const OrderController = new Elysia({ prefix: "/orders" })
             context.set.status = 403;
             return {
                 message:
-                    "Forbidden - Only ADMIN, STAFF, FRANCHISE_OWNER or order owner can update status; owner can only set status to confirmed or validated",
-                required: [Role.ADMIN, Role.STAFF, Role.FRANCHISE_OWNER],
+                    "Forbidden - Only ADMIN, STAFF, CUSTOMER can update status; owner can only set status to confirmed or validated",
+                required: [Role.ADMIN, Role.STAFF, Role.CUSTOMER],
                 actual: userRoles,
             };
         },
