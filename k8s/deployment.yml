@@ -18,7 +18,7 @@ spec:
                 - name: scw-registry-secret
             containers:
                 - name: commands-service
-                  image: rg.fr-par.scw.cloud/good-food-container-registry/commands-service:876db813c813ec6264df5067bca485d1c0bdd891
+                  image: rg.fr-par.scw.cloud/good-food-container-registry/commands-service:cde7e5002f4e9150acf6893a8dca5b651401352f
                   imagePullPolicy: Always
                   ports:
                       - containerPort: 8080
