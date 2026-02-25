@@ -4,6 +4,7 @@ import { CreateOrderDTO } from "./dto/order.dto.js";
 import { PaymentService } from "../Payment/payment.service.js";
 import { rabbitMQ } from "../Utils/rabbitmq.js";
 import { catalogClient } from "../Utils/catalog.client.js";
+import { orderPublisher } from "./order.publisher.js";
 
 type CreateOrderType = typeof CreateOrderDTO.static;
 
@@ -196,7 +197,7 @@ export class OrderService {
     }
 
     async updateStatus(id: string, status: OrderStatus) {
-        const updatedOrder = await this.db.order.update({
+        let updatedOrder = await this.db.order.update({
             where: { id },
             data: { status },
             include: { items: true }
@@ -204,6 +205,22 @@ export class OrderService {
 
         if (status === OrderStatus.confirmed) {
             try {
+                const paymentMethod = updatedOrder.paymentMethod || "card";
+                const payment = await this.paymentService.processPayment(
+                    updatedOrder.id,
+                    Number(updatedOrder.total),
+                    paymentMethod,
+                );
+
+                updatedOrder = await this.db.order.update({
+                    where: { id: updatedOrder.id },
+                    data: {
+                        paymentStatus: payment.status,
+                        transactionId: payment.transactionId,
+                    },
+                    include: { items: true },
+                });
+
                 await rabbitMQ.publish('order.created', {
                     orderId: updatedOrder.id,
                     shopId: updatedOrder.shopId,
@@ -211,6 +228,18 @@ export class OrderService {
                     items: updatedOrder.items,
                     total: updatedOrder.total
                 });
+
+                if (payment.status === "completed") {
+                    await orderPublisher.publishOrderValidatedAndPaid({
+                        orderId: updatedOrder.id,
+                        shopId: updatedOrder.shopId,
+                        userId: updatedOrder.userId,
+                        total: Number(updatedOrder.total),
+                        paymentStatus: payment.status,
+                        paymentMethod: updatedOrder.paymentMethod,
+                        transactionId: payment.transactionId,
+                    });
+                }
             } catch (error) {
                 console.error('OrderService: Failed to publish event', error);
             }
