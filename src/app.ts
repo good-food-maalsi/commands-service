@@ -47,11 +47,12 @@ app.listen({ port: env.PORT }, async () => {
         `📘 Swagger documentation: http://localhost:${env.PORT}/commands/swagger`,
     );
 
+    console.log("\n🛣️  Registered Routes:");
+    app.routes.forEach((route) => {
+        console.log(`[${route.method}] ${route.path}`);
+    });
+    console.log("");
+
     await rabbitMQ.connect();
     await startOrderConsumers();
 });
-
-console.log(`🦊 Commands Service is running at http://localhost:${env.PORT}`);
-console.log(
-    `📘 Swagger documentation: http://localhost:${env.PORT}/commands/swagger`,
-);
